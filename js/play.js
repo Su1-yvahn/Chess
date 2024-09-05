@@ -245,18 +245,7 @@ play.AIPlay = function (){
 	
 	var key=play.map[pace[3]][pace[2]];
 	if (key){
-		if (key == "j0"){
-			currentKey = key;
-			currentPace = pace;
-
-			finalChoice = -1;
-			com.get("warningBox").style.display = "block";
-			
-		}
-		else{
-			play.AIclickMan(key,pace[2],pace[3]);
-		}
-		
+		play.AIclickMan(key,pace[2],pace[3]);	
 	}else {
 		play.AIclickPoint(pace[2],pace[3]);
 	}
@@ -347,7 +336,8 @@ play.showWin = function (my){
 	if (my===1){
 		alert("恭喜你，你赢了！");
 	}else{
-		alert("很遗憾，你输了！");
+		com.get("warningBox").style.display = "block";
+		
 	}
 }
 

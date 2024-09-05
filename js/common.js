@@ -119,13 +119,15 @@ window.onload = function(){
 	//是否认输
 	com.get("surrenderBtn").addEventListener("click", function(e) {
 		com.get("warningBox").style.display = "none";
-		finalChoice = 1;
-		play.AIclickMan(currentKey,currentPace[2],currentPace[3]);
+		alert("很遗憾，你输了！");
+		if (confirm("是否确定要重新开始？")){
+			play.isPlay=true ;
+			play.init( play.depth,play.nowMap );
+		}
 	});
 
-	com.get("regretBtn").addEventListener("click", function(e) {
+	com.get("regretBTN").addEventListener("click", function(e) {
 		com.get("warningBox").style.display = "none";
-		finalChoice = 1;
 		play.regret(); 		 
 	});
 
