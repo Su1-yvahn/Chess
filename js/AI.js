@@ -1,4 +1,4 @@
-/*! 一叶孤舟 | qq:28701884 | 欢迎指教 */
+
 
 var AI = AI||{};
 
@@ -29,18 +29,17 @@ AI.init = function(pace){
 	 //如果棋谱里面没有，人工智能开始运作
 	var initTime = new Date().getTime();
 	AI.treeDepth=play.depth;
-	//AI.treeDepth=4;
 	
 	AI.number=0;
 	AI.setHistoryTable.lenght = 0
 
 	var val=AI.getAlphaBeta(-99999 ,99999, AI.treeDepth, com.arr2Clone(play.map),play.my);
-	//var val = AI.iterativeSearch(com.arr2Clone(play.map),play.my)
+
 	if (!val||val.value==-8888) {
 		AI.treeDepth=2;
 		val=AI.getAlphaBeta(-99999 ,99999, AI.treeDepth, com.arr2Clone(play.map),play.my);
 	}
-	//var val = AI.iterativeSearch(com.arr2Clone(play.map),play.my);
+	
 	if (val&&val.value!=-8888) {
 		var man = play.mans[val.key];
 		var nowTime= new Date().getTime();

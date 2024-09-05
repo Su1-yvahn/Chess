@@ -1,6 +1,36 @@
-/*! 一叶孤舟 | qq:28701884 | 欢迎指教 */
+
 
 var play = play||{};
+var currentKey, currentPace;
+var finalChoice    =   1;              //想要悔棋继续
+let timer;
+let timeLeft = 30;
+let timerElement = com.get("timerText");
+
+function startTimer() {
+    timeLeft = 30;
+    timerElement.innerHTML = `剩余时间: ${timeLeft}s`;
+
+    timer = setInterval(function() {
+        timeLeft--;
+        timerElement.innerHTML = `剩余时间: ${timeLeft}s`;
+
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            handleTimeOut();
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timer);
+}
+
+function handleTimeOut() {
+    // Action to take when time runs out
+    play.isPlay = false;
+	alert("超时！你输了！")
+}
 
 play.init = function (depth, map){
 	var map = map || com.initMap;
@@ -18,12 +48,13 @@ play.init = function (depth, map){
 	play.isOffensive	=	true;			//是否先手
 	play.depth			=	depth;			//搜索深度
 	play.isFoul			=	false;			//是否犯规长将
-	com.pane.isShow		=	 false;			//隐藏方块
+	com.pane.isShow		=	false;			//隐藏方块
+	  
 	
 	//清除所有旗子
 	play.mans 			=	com.mans	= {};
 	
-	//这么搞有点2，以后说不定出啥问题，先放着记着以后改
+	
 	com.childList.length = 3
 	/*
 	l(com.childList)
@@ -51,44 +82,6 @@ play.init = function (depth, map){
 	
 	//绑定点击事件
 	com.canvas.addEventListener("click",play.clickCanvas)
-	//clearInterval(play.timer);
-	//com.get("autoPlay").addEventListener("click", function(e) {
-		//clearInterval(play.timer);
-		//play.timer = setInterval("play.AIPlay()",1000);
-	//	play.AIPlay()
-	//})
-	/*
-	com.get("offensivePlay").addEventListener("click", function(e) {
-		play.isOffensive=true;
-		play.isPlay=true ;
-		com.get("chessRight").style.display = "none";
-		play.init();
-	})
-	
-	com.get("defensivePlay").addEventListener("click", function(e) {
-		play.isOffensive=false;
-		play.isPlay=true ;
-		com.get("chessRight").style.display = "none";
-		play.init();
-	})
-	*/
-	
-	
-	
-	/*
-	var initTime = new Date().getTime();
-	for (var i=0; i<=100000; i++){
-		
-		var h=""
-		var h=play.map.join();
-		//for (var n in play.mans){
-		//	if (play.mans[n].show) h+=play.mans[n].key+play.mans[n].x+play.mans[n].y
-		//}
-	}
-	var nowTime= new Date().getTime();
-	z([h,nowTime-initTime])
-	*/
-	
 }
 
 
@@ -145,6 +138,7 @@ play.regret = function (){
 
 //点击棋盘事件
 play.clickCanvas = function (e){
+	stopTimer();
 	if (!play.isPlay) return false;
 	var key = play.getClickMan(e);
 	var point = play.getClickPoint(e);
@@ -158,6 +152,7 @@ play.clickCanvas = function (e){
 		play.clickPoint(x,y);
 	}
 	play.isFoul = play.checkFoul();//检测是不是长将
+	startTimer();
 }
 
 //点击棋子，两种情况，选中或者吃子
@@ -169,7 +164,6 @@ play.clickMan = function (key,x,y){
 		if (play.indexOfPs(com.mans[play.nowManKey].ps,[x,y])){
 			man.isShow = false;
 			var pace=com.mans[play.nowManKey].x+""+com.mans[play.nowManKey].y
-			//z(bill.createMove(play.map,man.x,man.y,x,y))
 			delete play.map[com.mans[play.nowManKey].y][com.mans[play.nowManKey].x];
 			play.map[y][x] = play.nowManKey;
 			com.showPane(com.mans[play.nowManKey].x ,com.mans[play.nowManKey].y,x,y)
@@ -184,6 +178,7 @@ play.clickMan = function (key,x,y){
 			com.show()
 			com.get("clickAudio").play();
 			setTimeout(play.AIPlay,500);
+
 			if (key == "j0") play.showWin (-1);
 			if (key == "J0") play.showWin (1);
 		}
@@ -222,12 +217,17 @@ play.clickPoint = function (x,y){
 			com.dot.dots = [];
 			com.show();
 			com.get("clickAudio").play();
+
 			setTimeout(play.AIPlay,500);
 		}else{
 			//alert("不能这么走哦！")
 		}
 	}
 	
+}
+
+play.Ischecked = function(){
+
 }
 
 //Ai自动走棋
@@ -245,7 +245,18 @@ play.AIPlay = function (){
 	
 	var key=play.map[pace[3]][pace[2]];
 	if (key){
-		play.AIclickMan(key,pace[2],pace[3]);
+		if (key == "j0"){
+			currentKey = key;
+			currentPace = pace;
+
+			finalChoice = -1;
+			com.get("warningBox").style.display = "block";
+			
+		}
+		else{
+			play.AIclickMan(key,pace[2],pace[3]);
+		}
+		
 	}else {
 		play.AIclickPoint(pace[2],pace[3]);
 	}
@@ -267,21 +278,26 @@ play.checkFoul = function(){
 
 
 play.AIclickMan = function (key,x,y){
-	var man = com.mans[key];
-	//吃子
-	man.isShow = false;
-	delete play.map[com.mans[play.nowManKey].y][com.mans[play.nowManKey].x];
-	play.map[y][x] = play.nowManKey;
-	play.showPane(com.mans[play.nowManKey].x ,com.mans[play.nowManKey].y,x,y)
+
+		var man = com.mans[key];
+		if(finalChoice == 1){
+			//吃子
+			man.isShow = false;
+			delete play.map[com.mans[play.nowManKey].y][com.mans[play.nowManKey].x];
+			play.map[y][x] = play.nowManKey;
+			play.showPane(com.mans[play.nowManKey].x ,com.mans[play.nowManKey].y,x,y)
+			
+			com.mans[play.nowManKey].x = x;
+			com.mans[play.nowManKey].y = y;
+			play.nowManKey = false;
+			
+			com.show()
+			if (key == "j0") play.showWin (-1);
+			if (key == "J0") play.showWin (1);
+		}	
+	}
 	
-	com.mans[play.nowManKey].x = x;
-	com.mans[play.nowManKey].y = y;
-	play.nowManKey = false;
-	
-	com.show()
-	if (key == "j0") play.showWin (-1);
-	if (key == "J0") play.showWin (1);
-}
+
 
 play.AIclickPoint = function (x,y){
 	var key=play.nowManKey;

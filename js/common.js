@@ -1,4 +1,4 @@
-/*! 一叶孤舟 | qq:28701884 | 欢迎指教 */
+
 
 var com = com||{};
 
@@ -83,15 +83,6 @@ window.onload = function(){
 		com.get("menuBox").style.display = "none";
 	})
 	
-	//开始挑战
-	com.get("clasliBtn").addEventListener("click", function(e) {
-		play.isPlay=true ;
-		var clasli = parseInt(getRadioValue("clasli"), 10) || 0;
-		play.init( 4, com.clasli[clasli].map );
-		com.get("chessBox").style.display = "block";
-		com.get("menuBox").style.display = "none";
-	})
-	
 	// 悔棋
 	com.get("regretBtn").addEventListener("click", function(e) {
 		play.regret();
@@ -101,22 +92,13 @@ window.onload = function(){
 	com.get("gohomeBtn").addEventListener("click", function(e) {
 		com.get("chessBox").style.display = "none";
 		com.get("menuBox").style.display = "block";
-		com.get("indexBox").style.display = "block";
-		com.get("menuQj").style.display = "none";
+		com.get("indexBox").style.display = "block";		
 		com.get("menuDy").style.display = "none";
 	})
 	
 	//返回
 	com.get("menuFh").addEventListener("click", function(e) {
 		com.get("indexBox").style.display = "block";
-		com.get("menuQj").style.display = "none";
-		com.get("menuDy").style.display = "none";
-	})
-	
-	//返回关闭
-	com.get("menuGb").addEventListener("click", function(e) {
-		com.get("indexBox").style.display = "block";
-		com.get("menuQj").style.display = "none";
 		com.get("menuDy").style.display = "none";
 	})
 	
@@ -131,35 +113,23 @@ window.onload = function(){
 	//人机对弈
 	com.get("indexDy").addEventListener("click", function(e) {
 		com.get("indexBox").style.display = "none";
-		com.get("menuQj").style.display = "none";
 		com.get("menuDy").style.display = "block";
 	})
-	
-	//挑战棋局
-	com.get("indexQj").addEventListener("click", function(e) {
-		com.get("indexBox").style.display = "none";
-		com.get("menuQj").style.display = "block";
-		com.get("menuDy").style.display = "none";
-	})
 
-	//换肤
-	com.get("stypeBtn").addEventListener("click", function(e) {
-		var stype =com.nowStype;
-		if (stype=="stype3") stype="stype2";
-		else if (stype=="stype2") stype="stype1";
-		else if (stype=="stype1") stype="stype3";
-		com.init(stype);
-		com.show();
-		//play.depth = 4;
-		//play.init();
-		document.cookie="stype=" +stype;
-		clearInterval(timer);
-		var i=0;
-		var timer = setInterval(function (){
-			com.show();
-			if (i++>=5) clearInterval(timer);
-		},2000);
-	})
+	//是否认输
+	com.get("surrenderBtn").addEventListener("click", function(e) {
+		com.get("warningBox").style.display = "none";
+		finalChoice = 1;
+		play.AIclickMan(currentKey,currentPace[2],currentPace[3]);
+	});
+
+	com.get("regretBtn").addEventListener("click", function(e) {
+		com.get("warningBox").style.display = "none";
+		finalChoice = 1;
+		play.regret(); 		 
+	});
+
+	
 	
 	//获取单选框选择的值
 	function getRadioValue (name){
